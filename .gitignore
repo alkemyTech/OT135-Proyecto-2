@@ -144,3 +144,7 @@ venv
 *.7z
 *.xml
 !requirements.txt
+
+# ignore all "env" folders and all ".env" files
+**/env
+**/.env
