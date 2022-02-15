@@ -1,6 +1,11 @@
 import logging
 from logging.config import fileConfig
+import os
 
-fileConfig('logging.ini')
-logger = logging.getLogger(__name__)
+LOGGING_CONF=os.path.join(os.path.dirname(__file__),
+                          'logging.ini')
+fileConfig(LOGGING_CONF)
+logger = logging.getLogger('Grupo-E')
+
+
 
