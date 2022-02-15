@@ -8,4 +8,3 @@ fileConfig(LOGGING_CONF)
 logger = logging.getLogger('Grupo-E')
 
 
-
