@@ -6,4 +6,4 @@ DIR = os.path.dirname(__file__)
 
 logging.config.fileConfig(f'{DIR}/logging.cfg')
 logger = logging.getLogger('logger_grupo_C')
-logger.info('HELLO')
+logger.info('Test message')
