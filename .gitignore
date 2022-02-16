@@ -144,3 +144,6 @@ venv
 *.7z
 *.xml
 !requirements.txt
+
+# Temporal folder files
+**/files
