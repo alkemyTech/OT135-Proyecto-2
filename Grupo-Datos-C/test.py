@@ -1,11 +1,15 @@
 import os
-import xml.etree.cElementTree as ET
 import sys
 import time
 from functools import reduce
 from xml.etree.cElementTree import iterparse
 
 from multiprocessing import Pool
+
+from lxml import etree as ET
+import lxml.etree
+
+import pandas as pd
 
 start_time = time.time()
 
@@ -95,6 +99,9 @@ def mapper(data):
     # TODO: return something
 #  mapper(iterparse(FILE_LIGHT))
 # print(f'{time.time() - start_time}')
+
+tree = lxml.etree.parse(FILE_LIGHT)
+root = tree.getroot()
 if __name__ == '__main__':
     pool = Pool(processes=8)
-    pool.map(mapper, iterparse(FILE_LIGHT, events=None))
+    pool.map(mapper, root)
