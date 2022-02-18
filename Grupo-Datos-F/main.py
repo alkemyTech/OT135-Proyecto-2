@@ -39,17 +39,21 @@ def count_words(data):
     text_split = data.split()
     return Counter(text_split)
 
-def mapper(data):
+def get_data(data):
     return data.attrib['Body']
+
+def mapper(root):
+    data = list(map(get_data, root))
+    data_clean = list(map(clean_text, data))
+    data_count = map(count_words, data_clean)
+    return data_count
 
 def reducer(cnt1, cnt2):
     cnt1.update(cnt2)
     return cnt1
 
-data = list(map(mapper, root))
-data_clean = list(map(clean_text, data))
-data_count = map(count_words, data_clean)
-reduced = reduce(reducer, data_count)
+mapped = mapper(root)
+reduced = reduce(reducer, mapped)
 
 print('Top 10 palabras mas nombradas en los post:')
 print(reduced.most_common(10))
