@@ -30,12 +30,13 @@ def mapper(top_posts):
     posts = sort_best_10(posts)
     return posts
 
-#def reducer(posts1, posts2):
-    posts1 = posts1.extend(posts2)
-    print(posts1)
+def reducer(posts1, posts2):
+    posts1 = posts1 + posts2
+    posts1 = sort_best_10(posts1)
+    return posts1
 
 
 data_chunks = chunkify(root, 50)
 mapped = list(map(mapper, data_chunks))
-#reduced = reduce(reducer, mapped)
-print(mapped)
+reduced = reduce(reducer, mapped)
+print(reduced)
