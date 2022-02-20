@@ -62,13 +62,14 @@ def body_cleaner(body):
     return soup
 
 def count_words(data):
+    #text_split = "".join(data)
     text_split = data.split()
     return Counter(text_split)
 
 def mapper2(bodies):
-    body_list = map(get_bodies, bodies)
-    body_list = map(body_cleaner, body_list)
-    word_count = map(count_words, body_list)
+    body_list = list(map(get_bodies, bodies))
+    body_list = list(map(body_cleaner, body_list))
+    word_count = list(map(count_words, body_list))
     return word_count
 
 def reducer2(cnt1, cnt2):
@@ -76,6 +77,7 @@ def reducer2(cnt1, cnt2):
     return cnt1
 
 data_chunks = chunkify(root, 50)
-mapped2 = map(mapper2, data_chunks)
-reduced2 = reduce(reducer2, mapped2)
-print(reduced2)
+mapped2 = list(map(mapper2, data_chunks))
+#reduced2 = reduce(reducer2, mapped2)
+#print(reduced2)
+print(mapped2)
