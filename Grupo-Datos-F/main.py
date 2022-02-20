@@ -1,5 +1,6 @@
 from collections import Counter
 from functools import reduce
+from itertools import chain
 import logging as log
 from logging.config import fileConfig
 import os
@@ -17,10 +18,10 @@ logger = log.getLogger('log for data group F')
 # Registra un mensaje con nivel INFO en este logger
 logger.info('log by console')
 
-DIR = os.path.abspath('posts.xml')
+DIR = os.path.dirname(__file__)
 
 try:
-    tree = ET.parse(DIR)
+    tree = ET.parse(f'{DIR}/posts.xml')
     logger.info('File uploaded successfully')
 except Exception as err:
     logger.error(err)
@@ -28,32 +29,32 @@ except Exception as err:
 
 root = tree.getroot()
 
-# Top 10 palabras mas nombradas en los posts.
-def clean_text(data):
-    soup = BeautifulSoup(data, 'lxml')
-    text = soup.get_text()
-    text = re.sub(r'[\n|.|,|?|¿|¡|!|(|)|-|/|\|:]', ' ', text).lower()
-    return text
-    
-def count_words(data):
-    text_split = data.split()
-    return Counter(text_split)
-
-def get_data(data):
-    return data.attrib['Body']
-
-def mapper(root):
-    data = list(map(get_data, root))
-    data_clean = list(map(clean_text, data))
-    data_count = map(count_words, data_clean)
-    return data_count
+def chunkify(iter, len_chunk):
+    for i in range(0, len(iter), len_chunk):
+        yield iter[i:i + len_chunk]
 
 def reducer(cnt1, cnt2):
     cnt1.update(cnt2)
     return cnt1
 
-mapped = mapper(root)
-reduced = reduce(reducer, mapped)
+# Top 10 palabras mas nombradas en los posts.
+def clean_text(data):
+    soup = BeautifulSoup(data, 'lxml')
+    text = soup.get_text()
+    text = re.sub(r'[\n|.|,|?|¿|¡|!|(|)|-|/|\|:]', ' ', text).lower()
+    return text.split()
 
-print('Top 10 palabras mas nombradas en los post:')
-print(reduced.most_common(10))
+def get_words(data):
+    return data.attrib['Body']
+
+def mapper_words(data):
+    mapped_words = list(map(get_words, data))
+    data_clean = list(map(clean_text, mapped_words))
+    flatten_data = chain(*data_clean)
+    return Counter(flatten_data)
+
+def top_ten_words_in_posts():
+    data_chunks = chunkify(root, 50)
+    mapped = list(map(mapper_words, data_chunks))
+    reduced = reduce(reducer, mapped)
+    return reduced.most_common(10)
