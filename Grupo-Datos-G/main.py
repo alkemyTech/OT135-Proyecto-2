@@ -5,6 +5,9 @@ from functools import reduce
 import xml.etree.ElementTree as ET
 from numpy import iterable
 from collections import Counter
+import re
+from bs4 import BeautifulSoup
+
 
 log_file_path = path.join(path.dirname(path.abspath(__file__)), 'logging.ini')
 logging.config.fileConfig(log_file_path)
@@ -53,10 +56,26 @@ reduced = reduce(reducer, mapped)
 def get_bodies(data):
     return data.attrib['Body']
 
+def body_cleaner(body):
+    soup = BeautifulSoup(body, 'lxml').get_text()
+    soup = re.sub(r'[\n|.|,|?|¿|¡|!|(|)|-|/|\|:|\'|\"|,]', ' ', soup).lower()
+    return soup
+
+def count_words(data):
+    text_split = data.split()
+    return Counter(text_split)
+
 def mapper2(bodies):
-    body_list = list(map(get_bodies, bodies))
-    return body_list
+    body_list = map(get_bodies, bodies)
+    body_list = map(body_cleaner, body_list)
+    word_count = map(count_words, body_list)
+    return word_count
+
+def reducer2(cnt1, cnt2):
+    cnt1.update(cnt2)
+    return cnt1
 
 data_chunks = chunkify(root, 50)
-mapped2 = list(map(mapper2, data_chunks))
-print(mapped2)
+mapped2 = map(mapper2, data_chunks)
+reduced2 = reduce(reducer2, mapped2)
+print(reduced2)
