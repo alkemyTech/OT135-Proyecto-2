@@ -37,6 +37,21 @@ def reducer(cnt1, cnt2):
     cnt1.update(cnt2)
     return cnt1
 
+# Top 10 fechas con menor cantidad de post creados.
+def get_dates(data):
+    return data.attrib['CreationDate'][:10]
+
+def mapper_dates(dates):
+    mapped_dates = list(map(get_dates, dates))
+    return Counter(mapped_dates)
+
+def dates_with_fewer_posts():
+    data_chunks = chunkify(root, 50)
+    mapped = list(map(mapper_dates, data_chunks))
+    reduced = reduce(reducer, mapped)
+    return reduced.most_common()[-11:-1:]
+
+
 # Top 10 palabras mas nombradas en los posts.
 def clean_text(data):
     soup = BeautifulSoup(data, 'lxml')
