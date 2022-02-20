@@ -145,5 +145,11 @@ venv
 *.xml
 !requirements.txt
 
+<<<<<<< HEAD
 # Temporal folder files
 **/files
+=======
+# ignore all "env" folders and all ".env" files
+**/env
+**/.env
+>>>>>>> main
