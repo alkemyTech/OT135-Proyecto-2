@@ -83,3 +83,36 @@ def task_2():
     mapped2 = list(map(mapper2, data_chunks))
     reduced2 = reduce(reducer2, mapped2)
     print(reduced2.most_common(10))
+
+#Get tags
+def get_tags(data):
+    if data.attrib['PostTypeId'] == "1":
+        return data.attrib['Tags']
+
+
+def tag_cleaner(tags):
+    clean_tags = re.sub(r'[<|><|>]', ' ', tags).lower()
+    clean_tags = clean_tags.strip()
+    return clean_tags
+
+
+def tag_mapper(chunks):
+    tags = list(map(get_tags, chunks))
+    tags = list(filter(None, tags))  # Quito los None
+    tags = list(map(tag_cleaner, tags))
+    tags = list(set(tags))  # Quito los tags duplicados
+    tags = "".join(tags)
+    tags = tags.split()
+    return tags
+
+
+def tag_reducer(tags, tag2):
+    tags.extend(tag2)
+    return tags
+
+
+data_chunks = chunkify(root, 50)
+mapped_tags = list(map(tag_mapper, data_chunks))
+#reduced_tags = list(map(tag_reducer, mapped_tags))
+#print(reduced_tags)
+print(mapped_tags)
