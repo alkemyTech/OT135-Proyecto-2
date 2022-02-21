@@ -47,20 +47,24 @@ def reducer(posts1, posts2):
     return posts1
 
 
-data_chunks = chunkify(root, 50)
-mapped = list(map(mapper, data_chunks))
-reduced = reduce(reducer, mapped)
-#print(reduced)
+def task_1():
+    data_chunks = chunkify(root, 50)
+    mapped = list(map(mapper, data_chunks))
+    reduced = reduce(reducer, mapped)
+    print(reduced)
 
 # Top 10 palabras mas nombradas en los post por lenguaje
 
+
 def get_bodies(data):
     return data.attrib['Body']
+
 
 def body_cleaner(body):
     soup = BeautifulSoup(body, 'lxml').get_text()
     soup = re.sub(r'[\n|.|,|?|¿|¡|!|(|)|-|/|\|:|\'|\"|,]', ' ', soup).lower()
     return soup.split()
+
 
 def mapper2(bodies):
     body_list = list(map(get_bodies, bodies))
@@ -68,11 +72,14 @@ def mapper2(bodies):
     body_list = chain(*body_list)
     return Counter(body_list)
 
+
 def reducer2(cnt1, cnt2):
     cnt1.update(cnt2)
     return cnt1
 
-data_chunks = chunkify(root, 50)
-mapped2 = list(map(mapper2, data_chunks))
-reduced2 = reduce(reducer2, mapped2)
-print(reduced2.most_common(10))
+
+def task_2():
+    data_chunks = chunkify(root, 50)
+    mapped2 = list(map(mapper2, data_chunks))
+    reduced2 = reduce(reducer2, mapped2)
+    print(reduced2.most_common(10))
