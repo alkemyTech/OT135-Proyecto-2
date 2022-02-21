@@ -2,6 +2,7 @@ import logging
 from logging import config
 from os import path
 from functools import reduce
+from itertools import chain
 import xml.etree.ElementTree as ET
 from numpy import iterable
 from collections import Counter
@@ -59,18 +60,13 @@ def get_bodies(data):
 def body_cleaner(body):
     soup = BeautifulSoup(body, 'lxml').get_text()
     soup = re.sub(r'[\n|.|,|?|¿|¡|!|(|)|-|/|\|:|\'|\"|,]', ' ', soup).lower()
-    return soup
-
-def count_words(data):
-    #text_split = "".join(data)
-    text_split = data.split()
-    return Counter(text_split)
+    return soup.split()
 
 def mapper2(bodies):
     body_list = list(map(get_bodies, bodies))
     body_list = list(map(body_cleaner, body_list))
-    word_count = list(map(count_words, body_list))
-    return word_count
+    body_list = chain(*body_list)
+    return Counter(body_list)
 
 def reducer2(cnt1, cnt2):
     cnt1.update(cnt2)
@@ -78,6 +74,5 @@ def reducer2(cnt1, cnt2):
 
 data_chunks = chunkify(root, 50)
 mapped2 = list(map(mapper2, data_chunks))
-#reduced2 = reduce(reducer2, mapped2)
-#print(reduced2)
-print(mapped2)
+reduced2 = reduce(reducer2, mapped2)
+print(reduced2.most_common(10))
