@@ -2,17 +2,16 @@ import logging
 import logging.config
 import os
 
-import xml.etree.ElementTree as ET
+import xml.etree.cElementTree as ET  # Supuestamente es más rápido
 from functools import reduce
 from collections import Counter
-from xml.etree.ElementTree import iterparse
 # from multiprocessing import Pool
 
 DIR = os.path.dirname(__file__)
 
 logging.config.fileConfig(f'{DIR}/logging.cfg')
-logger = logging.getLogger('logger_grupo_B')
-logger.info('Test message')
+logger = logging.getLogger('Logger_Grupo_B')
+# logger.info('Test message')
 
 FILE = f'{DIR}/posts.xml'
 # FILE_LIGHT = f'{DIR}/posts_light.xml'
@@ -37,7 +36,7 @@ def add_ranking(key, increment, ranking):
 
 def add_ranking_tuple(key, quantity, amount, ranking):
     """
-    Incrementa valores de una lista de un diccionario
+    Incrementa valores de un diccionario de listas
     Inputs:
         key, valor de incremento uno, valor de incremento dos y diccionario
     Output:
@@ -53,14 +52,14 @@ def reducer(list1, list2):
     """
     Función de reducción
     Inputs:
-        listas
-            lista con cantidad de visitas y cantidad de palabras
+        2 listas, cada lista contiene:
+            lista [cantidad de visitas, cantidad de palabras]
             diccionario {'Lenguaje': número de preguntas}
-            diccionario de lista {'número_de_favoritos': [cantidad_de_posts, puntaje acumulado]}
+            diccionario de listas {'número_de_favoritos': [cantidad_de_posts, puntaje acumulado]}
     Output:
         lista reducida
     """
-    # Smamos los valores de la lista qe contiene visitas y palabras
+    # Sumamos los valores de la lista qe contiene visitas y palabras
     value1 = [0, 0]
     value1[0] = value1[0] + list1[0][0] + list2[0][0]
     value1[1] = value1[1] + list1[0][1] + list2[0][1]
@@ -87,18 +86,27 @@ def chunk_mapper(chunk):
     return reduced
 
 def mapper(data):
-    list_words_value = list(map(get_word_value, data))
-    # Quitamos valores de posts mal formados
-    list_words_value = [i for i in list_words_value if i != [0, 0]]
+    """
+    Función de mapeo
+    Inputs:
+        Conjunto de datos
+    Output:
+        Lista con los datos mapeados
+            [cantidad de vsitas. cantidad de palabras]
+            {'Lenguaje': número de preguntas}
+            {'número_de_favoritos': [cantidad_de_posts, puntaje acumulado]}
+
+    """
+    list_words_value = list(map(get_word_value, data))  # Mapeamos la función a los datos
+    list_words_value = [i for i in list_words_value if i != [0, 0]]  # Quitamos valores de posts mal formados
     words_value = [0, 0]
-    # Sumamos los valores de las listas
+    # Sumamos las cantidades de los elementos de la lista
     for element in list_words_value:
         words_value[0] = words_value[0] + element[0]
         words_value[1] = words_value[1] + element[1]
 
-    list_top_languages = list(map(get_top_languages, data))
-    # Quitamos valores de posts mal formados
-    list_top_languages = [x for x in list_top_languages if x]
+    list_top_languages = list(map(get_top_languages, data))  # Mapeamos la función a los datos
+    list_top_languages = [x for x in list_top_languages if x]  # Quitamos valores de posts mal formados
 
     ranking_languages = {}
     # Recorremos la "lista de listas de lenguajes" y vamos añadiéndolas al diccionario
@@ -106,9 +114,8 @@ def mapper(data):
         for language in list_language:
             add_ranking(language, 1, ranking_languages)
 
-    list_favorite_questions = list(map(get_favorite_questions, data))
-    # Quitamos valores de posts mal formados
-    list_favorite_questions = [i for i in list_favorite_questions if i != [0, 0]]
+    list_favorite_questions = list(map(get_favorite_questions, data))  # Mapeamos la función a los datos
+    list_favorite_questions = [i for i in list_favorite_questions if i != [0, 0]]  # Quitamos valores de posts mal formados
     # Recorremos la lista y vamos añadiéndolas al diccionario
     ranking_favorite_questions = {}
     for favorite_question in list_favorite_questions:
@@ -122,12 +129,12 @@ def get_top_languages(node):
     Inputs:
         Nodo XML
     Output:
-        Lista de strings de los lenguajes de la respuesta sin respuestas aceptadas
-        Lista vacía en todos los otros casos
+        Lista de strings de los lenguajes de la respuesta sin respuestas aceptadas ['A', 'B', 'C']
+        Lista vacía en todos los otros casos []
     """
     is_answer = bool(node.attrib.get("ParentId"))
     if is_answer:
-        # This is a answer
+        # This is an answer
         return []
     else:
         # This is a question, get attributes
@@ -153,7 +160,7 @@ def get_word_value(node):
     Inputs:
         Nodo XML
     Output:
-        Lista con cantidad de visitas y cantidad de palabras en nodos bien formados
+        Lista con cantidad de visitas y cantidad de palabras en nodos bien formados [X, Y]
         Lista [0, 0] en todos los otros casos
     """
     word_value = 0
@@ -163,7 +170,7 @@ def get_word_value(node):
 
     is_answer = bool(node.attrib.get("ParentId"))
     if is_answer:
-        # This is a answer
+        # This is an answer
         return [0, 0]
     else:
         # This is a question, get attributes
@@ -188,7 +195,7 @@ def get_favorite_questions(node):
     Inputs:
         Nodo XML
     Output:
-        Lista con con cantidad de favoritos y puntaje en nodos bien formados
+        Lista con con cantidad de favoritos y puntaje en nodos bien formados [X, Y]
         Lista [0, 0] en todos los otros casos
     """
     is_answer = bool(node.attrib.get("ParentId"))
@@ -213,6 +220,7 @@ if __name__ == '__main__':
 
     mapped = list(map(mapper, data_chunks))
     reduced = reduce(reducer, mapped)
+    # Convertimos y mostramos los datos
     reduced[0] = reduced[0][0] / reduced[0][1]
     reduced[1] = sorted(reduced[1].items(), key=lambda x: x[1], reverse=True)
     for element in reduced[2]:
