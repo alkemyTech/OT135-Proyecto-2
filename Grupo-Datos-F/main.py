@@ -74,7 +74,6 @@ def dates_with_fewer_posts():
     reduced = reduce(reducer, mapped)
     return reduced.most_common()[-11:-1:]
 
-
 # Top 10 palabras mas nombradas en los posts.
 def clean_text(data):
     soup = BeautifulSoup(data, 'lxml')
@@ -101,3 +100,8 @@ def top_ten_words_in_posts():
     mapped = list(map(mapper_words, data_chunks))
     reduced = reduce(reducer, mapped)
     return reduced.most_common(10)
+
+if __name__ == '__main__':
+    print('Top 10 fechas con menor cantidad de post creados:\n', dates_with_fewer_posts())
+    print('Top 10 palabras mas nombradas en los posts:\n', top_ten_words_in_posts())
+
