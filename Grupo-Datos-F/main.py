@@ -1,6 +1,5 @@
 from collections import Counter
 from functools import reduce
-from itertools import chain
 import logging as log
 from logging.config import fileConfig
 import os
