@@ -75,20 +75,15 @@ def dates_with_fewer_posts():
     return reduced.most_common()[-11:-1:]
 
 # Top 10 palabras mas nombradas en los posts.
-def clean_text(data):
-    soup = BeautifulSoup(data, 'lxml')
-    text = soup.get_text()
-    text = re.sub(r'[\n|.|,|?|¿|¡|!|(|)|-|/|\|:]', ' ', text).lower()
-    return text.split()
-
-def get_words(data):
-    return data.attrib['Body']
+def clean_data(data):
+    body = data.attrib['Body']
+    body = re.findall('(?<!\S)[A-Za-z]+(?!\S)|(?<!\S)[A-Za-z]+(?=:(?!\S))', body) 
+    return Counter(body)
 
 def mapper_words(data):
-    mapped_words = list(map(get_words, data))
-    data_clean = list(map(clean_text, mapped_words))
-    flatten_data = chain(*data_clean)
-    return Counter(flatten_data)
+    mapped_words = list(map(clean_data, data))
+    reduced_words = reduce(reducer, mapped_words)
+    return reduced_words
 
 def top_ten_words_in_posts():
     """Realiza un map-reduce de las palabras nombradas en los posts.
