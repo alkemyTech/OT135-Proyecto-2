@@ -7,8 +7,6 @@ import os
 import re
 import xml.etree.ElementTree as ET
 
-from bs4 import BeautifulSoup
-
 config = os.path.join(os.path.dirname(__file__), 'logging.cfg')
 fileConfig(config)
 
