@@ -9,7 +9,7 @@ def chunkify(iterable, len_of_chunk):
         yield iterable[i:i + len_of_chunk]
 
 
-def obtener_tags_y_palabras(data):
+def get_tags_words(data):
     try:
         tags = data.attrib['Tags']
     except:
@@ -18,15 +18,15 @@ def obtener_tags_y_palabras(data):
     body = data.attrib['Body']
     body = re.findall(
         '(?<!\S)[A-Za-z]+(?!\S)|(?<!\S)[A-Za-z]+(?=:(?!\S))', body)
-    counter_palabras = Counter(body)
-    return tags, counter_palabras
+    word_counter = Counter(body)
+    return tags, word_counter
 
 
-def separar_tags_y_palabras(data):
+def separate_tags_words(data):
     return dict([[tag, data[1].copy()] for tag in data[0]])
 
 
-def reducir_contadores(data1, data2):
+def reduce_counter(data1, data2):
     for key, value in data2.items():
         if key in data1.keys():
             data1[key].update(data2[key])
@@ -36,15 +36,15 @@ def reducir_contadores(data1, data2):
 
 
 def mapper(data):
-    palabras_mapeadas = list(map(obtener_tags_y_palabras, data))
-    palabras_mapeadas = list(filter(None, palabras_mapeadas))
-    palabras_por_tag = list(
-        map(separar_tags_y_palabras, palabras_mapeadas))
+    mapped_words = list(map(get_tags_words, data))
+    mapped_words = list(filter(None, mapped_words))
+    words_in_tag = list(
+        map(separate_tags_words, mapped_words))
     try:
-        reducido = reduce(reducir_contadores, palabras_por_tag)
+        reduced = reduce(reduce_counter, words_in_tag)
     except:
         return
-    return reducido
+    return reduced
 
 
 def calculate_top_10(data):
@@ -60,6 +60,6 @@ def task_2():
     data_chunks = chunkify(root, 50)
     mapped = list(map(mapper, data_chunks))
     mapped = list(filter(None, mapped))
-    reduced = reduce(reducir_contadores, mapped)
+    reduced = reduce(reduce_counter, mapped)
     top_10 = dict(map(calculate_top_10, reduced.items()))
     print(top_10)
