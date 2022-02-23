@@ -1,15 +1,3 @@
-import xml.etree.ElementTree as ET
-import functools
-from functools import reduce
-from itertools import chain
-from bs4 import BeautifulSoup
-import re
-from collections import Counter
-import os
-
-mytree = ET.parse('Grupo-Datos-A/112010 Meta Stack Overflow/posts.xml')
-myroot = mytree.getroot()
-
 def extract_tags(data):
     yield data.attrib['Tags']
 
@@ -29,7 +17,7 @@ def clean_tags(tags):
             tags_list.append(None)
     return tags_list
 
-def filter_answers(answers):
+def filter_answers(answer_count):
     answers_filtered = []
     for answer in answer_count:
         try:
@@ -39,23 +27,26 @@ def filter_answers(answers):
             answers_filtered.append(0)
     return answers_filtered
 
-tags = list(map(extract_tags,myroot))
-tags = clean_tags(tags)
+def query1(myroot):
+    tags = list(map(extract_tags,myroot))
+    tags = clean_tags(tags)
 
-answer_count = list(map(extract_answers,myroot))
-answer_count = filter_answers(answer_count)
+    answer_count = list(map(extract_answers,myroot))
+    answer_count = filter_answers(answer_count)
 
-tags_answers = []
-for tag_list in tags:
-    if (tag_list is not None):
-        for tag in tag_list:
-            tags_answers.append((tag, answer_count[tags.index(tag_list)]))
+    tags_answers = []
+    for tag_list in tags:
+        if (tag_list is not None):
+            for tag in tag_list:
+                tags_answers.append((tag, answer_count[tags.index(tag_list)]))
 
-results = {}
-for tag_answer in tags_answers:
-    if tag_answer[0] in results:
-        results[tag_answer[0]] += tag_answer[1]
-    else:
-        results[tag_answer[0]] = tag_answer[1]
-    
-print(sorted(results, key=results.get, reverse=True)[:10])
+    results = {}
+    for tag_answer in tags_answers:
+        if tag_answer[0] in results:
+            results[tag_answer[0]] += tag_answer[1]
+        else:
+            results[tag_answer[0]] = tag_answer[1]
+        
+    result = sorted(results, key=results.get, reverse=True)[:10]
+
+    return result
