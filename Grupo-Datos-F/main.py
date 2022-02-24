@@ -183,7 +183,8 @@ def avg_time_100_200():
     times = []
     reduce(reducer2, mapped_2)
 
-    avg_time_100_200 = reduce(time_reducer, times)/len(times)
+    times_100_200 = reduce(time_reducer, times)
+    avg_time_100_200 = times_100_200/len(times)
     return avg_time_100_200
 
 
