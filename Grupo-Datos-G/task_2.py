@@ -51,8 +51,7 @@ def calculate_top_10(data):
     return data[0], data[1].most_common(10)
 
 
-tree = ET.parse(
-    r"/home/lengulian/Escritorio/OT135-Proyecto-2/Grupo-Datos-G/posts.xml")
+tree = ET.parse(r"posts.xml")
 root = tree.getroot()
 
 

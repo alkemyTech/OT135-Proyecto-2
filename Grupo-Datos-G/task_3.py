@@ -58,23 +58,24 @@ def mapper_2(data):
     return post_type_2
 
 
-tree = ET.parse(
-    r"/home/lengulian/Escritorio/OT135-Proyecto-2/Grupo-Datos-G/posts.xml")
+tree = ET.parse(r"posts.xml")
 root = tree.getroot()
+#Preguntas: Top 200-300 ordenadas por score
 data_chunks = chunkify(root, 50)
 mapped_1 = list(map(mapper_1, data_chunks))
 type1_reduced = reduce(reducer_1, mapped_1)
 type1_reduced = sorted(
     type1_reduced, key=lambda x: x[1], reverse=True)[200:300]
-# print(len(type1_reduced))
-# print(type1_reduced)
+#Respuestas
 data_chunks = chunkify(root, 50)
 mapped_2 = list(map(mapper_2, data_chunks))
-# print(mapped_2)
-
 times = []
 
+
 def reducer2(data1, data2):
+    '''
+    Obtiene los tiempos de respuesta comparando los id de las preguntas con el parent id de las respuestas
+    '''
     for elem in type1_reduced:
         for i in data1:
             while elem[0] == i[0]:
@@ -84,12 +85,19 @@ def reducer2(data1, data2):
     data1 = data2
     return data1
 
-
-reduced_type1_type2 = reduce(reducer2, mapped_2)
-
 def time_reducer(time1, time2):
+    '''
+    Suma todos los tiempos de respuesta en uno
+    '''
     time1 = time1 + time2
     return time1
 
-prom_time_200_300 = reduce(time_reducer, times)/len(times)
-print(f'El timepo promedio de respuesta en el top 200-300 de preguntas es: {prom_time_200_300}')
+
+def task_3():
+    '''
+    Ejecuta la tarea 3:
+    Devuelve el tiempo promedio de respuesta en el top 200-300 de preguntas
+    '''
+    reduced_type1_type2 = reduce(reducer2, mapped_2)
+    prom_time_200_300 = reduce(time_reducer, times)/len(times)
+    print(prom_time_200_300)
