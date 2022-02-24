@@ -1,15 +1,17 @@
+import re
+import xml.etree.ElementTree as ET
 from functools import reduce
 from typing import Counter
-import xml.etree.ElementTree as ET
-import re
 
 
 def chunkify(iterable, len_of_chunk):
+    '''Divide un archivo grande en pedazos'''
     for i in range(0, len(iterable), len_of_chunk):
         yield iterable[i:i + len_of_chunk]
 
 
 def get_tags_words(data):
+    '''Obtiene los tags(lenguajes) y los body. Limpia los body'''
     try:
         tags = data.attrib['Tags']
     except:
@@ -27,6 +29,7 @@ def separate_tags_words(data):
 
 
 def reduce_counter(data1, data2):
+    '''Devuelve el contador de palabras por lenguaje'''
     for key, value in data2.items():
         if key in data1.keys():
             data1[key].update(data2[key])
@@ -48,6 +51,7 @@ def mapper(data):
 
 
 def calculate_top_10(data):
+    '''Devuelve el top 10 de palabras por lenguaje'''
     return data[0], data[1].most_common(10)
 
 
@@ -56,6 +60,7 @@ root = tree.getroot()
 
 
 def task_2():
+    '''Ejecuta una consulta que imprime el top 10 de palabras por lenguaje'''
     data_chunks = chunkify(root, 50)
     mapped = list(map(mapper, data_chunks))
     mapped = list(filter(None, mapped))

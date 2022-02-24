@@ -1,5 +1,5 @@
-from functools import reduce
 import xml.etree.ElementTree as ET
+from functools import reduce
 
 file_path = 'posts.xml'
 tree = ET.parse(file_path)

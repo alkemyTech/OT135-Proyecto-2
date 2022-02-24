@@ -1,11 +1,10 @@
-from functools import reduce
-from typing import Counter
 import xml.etree.ElementTree as ET
 from datetime import datetime
-import pandas as pd
+from functools import reduce
 
 
 def chunkify(iterable, len_of_chunk):
+    '''Divide un archivo grande en pedazos'''
     for i in range(0, len(iterable), len_of_chunk):
         yield iterable[i:i + len_of_chunk]
 
