@@ -169,7 +169,7 @@ def avg_time_100_200():
     en el top 100-200 score.
 
     Returns:
-        str: Tiempo promedio de respuesta.
+        datetime: Tiempo promedio de respuesta.
     """
     global type1_reduced, times
     data_chunks = chunkify(root, 50)
