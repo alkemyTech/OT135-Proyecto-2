@@ -13,12 +13,15 @@ logger = logging.getLogger(__name__)
 
 # Top 10 posts mas vistos
 print('Top 10 posts mas vistos: (ID, VISTAS)')
-#task_1.task_1()
+task_1.task_1()
+print()
 
 # Top 10 palabras mas nombradas en los post por lenguaje
 print('Top 10 palabras mas nombradas en los post por lenguaje')
-#task_2.task_2()
+task_2.task_2()
+print()
 
 #Tiempo de respuesta promedio en top 200-300 score
 print('El timepo promedio de respuesta en el top 200-300 de preguntas es:')
 task_3.task_3()
+print()

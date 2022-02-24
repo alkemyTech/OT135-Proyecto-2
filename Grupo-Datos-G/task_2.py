@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 from functools import reduce
 from typing import Counter
 
+# Top 10 palabras mas nombradas en los post por lenguaje
 
 def chunkify(iterable, len_of_chunk):
     '''Divide un archivo grande en pedazos'''
