@@ -108,7 +108,6 @@ def id_score_dates(data):
 def parentid_dates(data):
     post_id = data.attrib['PostTypeId']
     creation_date = data.attrib['CreationDate']
-    #parent_id = data.attrib['ParentId']
     if post_id == '2':
         parent_id = data.attrib['ParentId']
         return parent_id, creation_date
