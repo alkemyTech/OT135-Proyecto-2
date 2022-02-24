@@ -1,7 +1,14 @@
+import os
 import re
 import xml.etree.ElementTree as ET
 from functools import reduce
 from typing import Counter
+
+DIR = os.path.dirname(__file__)
+
+file_path = f'{DIR}/posts.xml'
+tree = ET.parse(file_path)
+root = tree.getroot()
 
 # Top 10 palabras mas nombradas en los post por lenguaje
 
@@ -54,10 +61,6 @@ def mapper(data):
 def calculate_top_10(data):
     '''Devuelve el top 10 de palabras por lenguaje'''
     return data[0], data[1].most_common(10)
-
-
-tree = ET.parse(r"posts.xml")
-root = tree.getroot()
 
 
 def task_2():

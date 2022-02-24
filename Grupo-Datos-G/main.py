@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 # Top 10 posts mas vistos
-print('Top 10 posts mas vistos: (ID, VISTAS)')
+print('Top 10 posts mas vistos: (Id, ViewCount)')
 task_1.task_1()
 print()
 

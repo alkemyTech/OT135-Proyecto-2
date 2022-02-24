@@ -1,7 +1,10 @@
+import os
 import xml.etree.ElementTree as ET
 from functools import reduce
 
-file_path = 'posts.xml'
+DIR = os.path.dirname(__file__)
+
+file_path = f'{DIR}/posts.xml'
 tree = ET.parse(file_path)
 root = tree.getroot()
 

@@ -1,11 +1,16 @@
+import os
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from functools import reduce
 
-# Tiempo de respuesta promedio en top 200-300 score
+DIR = os.path.dirname(__file__)
 
-tree = ET.parse(r"posts.xml")
+file_path = f'{DIR}/posts.xml'
+tree = ET.parse(file_path)
 root = tree.getroot()
+
+
+# Tiempo de respuesta promedio en top 200-300 score
 
 
 def chunkify(iterable, len_of_chunk):
