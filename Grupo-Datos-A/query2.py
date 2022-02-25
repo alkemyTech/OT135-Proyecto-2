@@ -1,18 +1,7 @@
-from bleach import clean
 from bs4 import BeautifulSoup
 import re
 from itertools import chain
 from statistics import mean
-
-
-import xml.etree.ElementTree as ET
-
-try:
-    mytree = ET.parse('Grupo-Datos-A/112010 Meta Stack Overflow/posts.xml')
-    myroot = mytree.getroot()
-except:
-    raise Exception
-
 
 def chunkify(iterable, len_of_chunk):
     for i in range(0, len(iterable), len_of_chunk):

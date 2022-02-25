@@ -12,8 +12,11 @@ LOGGING_CONF=os.path.join(os.path.dirname(__file__), 'logging.cfg')
 fileConfig(LOGGING_CONF)
 logger = logging.getLogger(__name__)
 
+DIR = os.path.dirname(__file__)
+FILE_PATH = f'{DIR}/posts.xml'
+
 try:
-    mytree = ET.parse('Grupo-Datos-A/112010 Meta Stack Overflow/posts.xml')
+    mytree = ET.parse(FILE_PATH)
     myroot = mytree.getroot()
 except:
     logger.error('Hubo un error parseando el archivo xml')
