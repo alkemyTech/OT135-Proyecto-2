@@ -1,37 +1,72 @@
+from bleach import clean
 from bs4 import BeautifulSoup
 import re
+from itertools import chain
+from statistics import mean
+
+
+import xml.etree.ElementTree as ET
+
+try:
+    mytree = ET.parse('Grupo-Datos-A/112010 Meta Stack Overflow/posts.xml')
+    myroot = mytree.getroot()
+except:
+    raise Exception
+
+
+def chunkify(iterable, len_of_chunk):
+    for i in range(0, len(iterable), len_of_chunk):
+        yield iterable[i:i + len_of_chunk]
 
 def extract_bodies(data):
     yield data.attrib['Body']
 
 def extract_scores(data):
-    yield int(data.attrib['Score'])
+    return int(data.attrib['Score'])
+
+def extract_LastEditDate(root):
+    lastEditDate = None
+    try:
+        lastEditDate = root.attrib['LastEditDate']
+    except:
+        pass
+    return lastEditDate
 
 def count_words(string):
     soup = BeautifulSoup(next(string), 'lxml')
     text = soup.get_text()
     text = re.sub(r'[\n|.|,|?|¿|¡|!|(|)|-|/|\|:|"]', ' ', text).lower()
-    yield len(text.split())
+    return len(text.split())
 
-def score_per_word(words, score):
-    average = 0
+def mapper(myroot):
+    texts = list(map(extract_bodies, myroot))
+    words = list(map(count_words,texts))
+    return words
+
+def mapper2(myroot):
+    score = list(map(extract_scores,myroot))
+    return score
+
+def reducer(words, score):
+    relations = []
     for word in words:
-        w = next(word)
-        s = next(score[words.index(word)])
-        if w != 0:
-            average = (average+(s/w))/2
+        if word > 0:
+            relations.append(score[words.index(word)]/word)
         else:
             pass
-    return average
+    return mean(relations)
+
 
 def query2(myroot):
-    # map: extraigo todos los bodies
-    texts = list(map(extract_bodies,myroot))
-    #reduce: reduzco cada body a la cantidad de palabras por body
-    words = list(map(count_words,texts))
-    #map: extraigo todos los scores
-    score = list(map(extract_scores,myroot))
-    #reduce: hago el promedio total comparando los scores con sus respectivos bodies
-    average_score = score_per_word(words, score)
+    '''
+    Esta función recibe como parametro una root de un archivo xml parseado con ElementTree.
+    Aplica técnicas de map-reduce y devuelve el valor promedio por palabra.
+    '''
+    root = chunkify(myroot, 100)
+    words = list(map(mapper, root))
+    root = chunkify(myroot, 100)
+    scores = list(map(mapper2, root))
 
-    return average_score
+    reduced = reducer(list(chain(*words)), list(chain(*scores)))
+
+    return reduced
