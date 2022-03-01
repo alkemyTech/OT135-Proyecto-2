@@ -3,6 +3,7 @@ import pandas as pd
 import xml.etree.ElementTree as etree
 from functools import reduce
 from datetime import datetime
+import itertools 
 
 
     # ['Id', 'PostTypeId', 'ParentId', 
@@ -44,11 +45,14 @@ def creation_date_list(data):
     for element in data:
         date1 = element.attrib.get('CreationDate')
         date2 = element.attrib.get('LastActivityDate')
-        date_list.append((datetime.datetime.strptime(date2,'%Y-%m-%dT%H:%M:%S.%f')-(datetime.datetime.strptime(date1,'%Y-%m-%dT%H:%M:%S.%f'))))
+        date_list.append((datetime.strptime(date2,'%Y-%m-%dT%H:%M:%S.%f')-(datetime.strptime(date1,'%Y-%m-%dT%H:%M:%S.%f'))))
     return sorted(date_list, reverse = True)
 
-def reducer2(data):
-    list_2 = data[:10]
+def reducer2(data, data2):
+    data = data + data2
+    list2 =sorted(list(itertools.chain.from_iterable(data)), reverse = True)
+    list_2 = list2[:10]
+    return list(list_2)
 
 def s_a_relation(data):
     list_3 =[]
@@ -58,11 +62,14 @@ def s_a_relation(data):
         list_3.append(answercount/score)
     return list_3
 
-def reducer3(data):
+def reducer3(data, data1):
+    data = data+data1
     rel=sum(data)
     return rel
 
 root = tree.getroot()
 chunks = chunkify(root, 50)
 mapped1 =list(map(post_type_list, chunks))
+mapped2 = list((creation_date_list, chunks))
+mapped2 =list(map(creation_date_list, chunks))
 #reduced1 = reduce(reducer1, mapped1)
