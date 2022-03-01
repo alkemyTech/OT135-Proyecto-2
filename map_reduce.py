@@ -59,8 +59,11 @@ def s_a_relation(data):
     for element in data:
         score = element.attrib.get('Score')
         answercount = element.attrib.get('AnswerCount')
-        list_3.append(answercount/score)
-    return list_3
+        if score is not None and answercount is not None:
+            try:
+                list_3.append(int(answercount)/int(score))
+            except ZeroDivisionError as e:
+                print(e)
 
 def reducer3(data, data1):
     data = data+data1
