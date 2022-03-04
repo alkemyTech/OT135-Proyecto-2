@@ -1,11 +1,13 @@
 import logging
 import logging.config
 import os
+import time
+import multiprocessing as mp
 
 import xml.etree.cElementTree as ET  # Supuestamente es más rápido
 from functools import reduce
 from collections import Counter
-# from multiprocessing import Pool
+from multiprocessing import Pool
 
 DIR = os.path.dirname(__file__)
 
@@ -16,6 +18,8 @@ logger = logging.getLogger('Logger_Grupo_B')
 FILE = f'{DIR}/posts.xml'
 # FILE_LIGHT = f'{DIR}/posts_light.xml'
 # FILE_LARGE = f'{DIR}/posts_large.xml'
+
+# start_time = time.time()
 
 def chunkify(iterable, len_of_chunk):
     for i in range(0, len(iterable), len_of_chunk):
@@ -213,13 +217,18 @@ def get_favorite_questions(node):
             # logger.info(str([favorite_count, score]))
             return [favorite_count, int(score)]
 if __name__ == '__main__':
-    # pool = Pool(processes=8)
-    tree = ET.parse(FILE)
+    pool = Pool(processes=mp.cpu_count())
+    try:
+        tree = ET.parse(FILE)
+    except IOError as e:
+        logger.error(f'Error al leer el archivo xml, no se lo ha encontrado: {e}')
+        raise Exception('No se encontró el archivo xml')
     root = tree.getroot()
     data_chunks = chunkify(root, 100)
 
-    mapped = list(map(mapper, data_chunks))
-    reduced = reduce(reducer, mapped)
+    # mapped = list(pool.map(mapper, data_chunks))
+    # reduced = reduce(reducer, mapped)
+    reduced = reduce(reducer, list(pool.map(mapper, data_chunks)))
     # Convertimos y mostramos los datos
     reduced[0] = reduced[0][0] / reduced[0][1]
     reduced[1] = sorted(reduced[1].items(), key=lambda x: x[1], reverse=True)
@@ -229,3 +238,4 @@ if __name__ == '__main__':
     print(f'Valor de cada palabra {reduced[0]}')
     print(f'Top 10 de lenguajes con más preguntas sin respuestas aceptadas {reduced[1][:10]}')
     print(f'Promedio de puntaje según cantidad de favoritos {reduced[2]}')
+    # print("--- %s seconds ---" % (time.time() - start_time))
